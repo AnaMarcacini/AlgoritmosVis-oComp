@@ -1,0 +1,35 @@
+import os
+from datetime import datetime
+
+# Configuração do seu repositório
+repository_url = "https://github.com/AnaMarcacini/AlgoritmosVisaoComp.git"
+folder_path = "Script"  # pasta dentro do repositório
+notebook_name = "ScriptUploadAutomatico.ipynb"  # Nome do notebook
+
+# Credenciais do GitHub
+!git config --global user.email "ana.marcacini@maua.br"
+!git config --global user.name "AnaMarcacini"
+
+# Clone o repositório
+if not os.path.exists("AlgoritmosVisaoComp"):
+    !git clone {repository_url} AlgoritmosVisaoComp
+os.chdir("AlgoritmosVisaoComp")
+
+# Criando a pasta
+if not os.path.exists(folder_path):
+    os.makedirs(folder_path)
+
+# Salva o notebook atual na pasta
+notebook_save_path = f"{folder_path}/{notebook_name}"
+!cp /content/{notebook_name} {notebook_save_path}
+
+# Mover arquivos
+uploaded_files = [f for f in os.listdir('/content') if os.path.isfile(f"/content/{f}")]
+for file in uploaded_files:
+    !mv /content/{file} {folder_path}/
+
+!git add .
+commit_message = f"Automatic backup on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+!git commit -m "{commit_message}"
+!git push origin main
+
